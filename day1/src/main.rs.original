@@ -1,0 +1,55 @@
+use std::fs::File;
+use std::io::{self, BufRead};
+use std::path::Path;
+
+// The output is wrapped in a Result to allow matching on errors
+// Returns an Iterator to the Reader of the lines of the file.
+fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+where P: AsRef<Path>, {
+    let file = File::open(filename)?;
+    Ok(io::BufReader::new(file).lines())
+}
+
+fn read_input() -> Vec<(i32,i32)> {
+    let mut calcounts: Vec<(i32,i32)> = Vec::new();
+    let mut current_calories = 0;
+    let mut current_elf = 1;
+    // File hosts must exist in current path before this produces output
+    if let Ok(lines) = read_lines("./input") {
+        // Consumes the iterator, returns an (Optional) String
+        for line in lines {
+            if let Ok(l) = line {
+                if l.is_empty() { 
+                    calcounts.push((current_calories, current_elf));
+                    current_calories = 0; 
+                    current_elf += 1; 
+                }
+                else { current_calories += l.parse::<i32>().unwrap()}
+            }
+        }
+    }
+    calcounts.sort();
+    calcounts.reverse();
+    return calcounts
+}
+
+fn _find_max(input: &Vec<(i32,i32)>) -> (i32, i32) {
+    let (mut max_val, mut max_index) = (0, 0);
+    for (index, val) in input.iter().enumerate() {
+        if val.0 > max_val {
+            max_val = val.0;
+            max_index = index;
+        }
+    }
+    (max_index.try_into().unwrap(), max_val)
+}
+
+fn main() {
+    let calcounts = read_input();
+    //let (_elf_index, calcount) = _find_max(&calcounts);
+
+    let top1 = calcounts[0].0;
+    let top3 = calcounts[0].0 + calcounts[1].0 + calcounts[2].0 ;
+    println!("{:?}", top1);
+    println!("{:?}", top3);
+}
