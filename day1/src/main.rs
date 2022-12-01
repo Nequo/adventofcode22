@@ -13,6 +13,7 @@ fn add_consecutive_lines(input: &str) -> Vec<u32> {
         }
         else { current_calories += line.parse::<u32>().unwrap()}
     }
+    calcounts.push(current_calories);
     calcounts.sort();
     calcounts.reverse();
     calcounts
